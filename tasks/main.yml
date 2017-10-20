@@ -1,4 +1,14 @@
 ---
+- name: check if a swapfile already exists
+  stat: path={{ swapfile_location }}
+  register: swapfile
+  become: no
+
+- name: swapoff this swapfile if it exist already as we want to change its size
+  command: |
+    swapoff {{ swapfile_location }}
+  when: swapfile.stat.exists
+
 - name: Write swapfile
   command: |
     {% if swapfile_use_dd %}
