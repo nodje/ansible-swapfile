@@ -6,7 +6,7 @@
 
 - name: swapoff this swapfile if it exist already as we want to change its size
   command: |
-    swapoff {{ swapfile_location }}
+    swapoff -a
   when: swapfile.stat.exists
 
 - name: Write swapfile
