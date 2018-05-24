@@ -4,10 +4,11 @@
   register: swapfile
   become: no
 
-- name: swapoff this swapfile if it exist already as we want to change its size
-  command: |
+- name: swapoff this swapfile if it exist already, and delete it as we want to change its size
+  shell: |
     swapoff -a
-  when: swapfile.stat.exists
+    rm {{ swapfile_location }}
+  when: swapfile.stat.exists and 'ansible_swaptotal_mb < swapfile_size'
 
 - name: Write swapfile
   command: |
