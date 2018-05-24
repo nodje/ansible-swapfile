@@ -16,6 +16,8 @@
     {% else %}
     fallocate -l {{ swapfile_size }} {{ swapfile_location }} creates={{ swapfile_location }}
     {% endif %}
+  #NB:  creates= A glob pattern, when it already exists, this step will not be run.
+  register: write_swapfile
   when: swapfile_size != false
 
 - name: Set swapfile permissions
@@ -27,7 +29,7 @@
   environment:
     PATH: "{{ (ansible_env|default({})).PATH|default('') }}:/usr/local/sbin:/usr/sbin:/sbin"
   register: create_swapfile
-  when: swapfile_size != false
+  when: swapfile_size != false and write_swapfile.changed
 
 - name: Enable swapfile
   command: swapon {{ swapfile_location }}
